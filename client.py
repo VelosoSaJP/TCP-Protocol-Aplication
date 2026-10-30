@@ -1,9 +1,24 @@
-from protocol import get_message
+import socket
 
+HOST = "127.0.0.1"
+PORT = 65432
 
-def main():
-	print(f"Cliente recebeu: {get_message()}")
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock_cliente:
 
+	sock_cliente.connect((HOST, PORT))
+	print(f"Conectado ao servidor em {HOST}:{PORT}")
 
-if __name__ == "__main__":
-	main()
+	while True:
+		mensagem = input("Digite uma mensagem (ou 'sair' para encerrar): ")
+		if mensagem == "sair":
+			break
+
+		sock_cliente.sendall(mensagem.encode())
+
+		resposta = sock_cliente.recv(1024)
+		
+		if not resposta:
+			print("Servidor desconectou")
+			break
+
+		print(f"Resposta do servidor: {resposta.decode()}")
